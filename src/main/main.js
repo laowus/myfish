@@ -35,6 +35,33 @@ const init = () => {
     })
 }
 
+ipcMain.on('window-min', event => {
+    const webContent = event.sender;
+    const win = BrowserWindow.fromWebContents(webContent);
+    win.hide();
+});
+ipcMain.on('window-max', event => {
+    const webContent = event.sender;
+    const win = BrowserWindow.fromWebContents(webContent);
+    win.maximize();
+});
+ipcMain.on('window-close', event => {
+    const webContent = event.sender;
+    const win = BrowserWindow.fromWebContents(webContent);
+    win.hide();
+});
+
+// 处理获取存储值的请求
+ipcMain.handle('getSysConfig', (event, key) => {
+    return sysConfigStore.get(key);
+});
+ipcMain.handle('setSysConfig', (event, key, val) => {
+    sysConfigStore.set(key, val);
+});
+ipcMain.handle('deleteSysConfig', (event, key, val) => {
+    sysConfigStore.delete(key);
+});
+
 //全局事件监听
 const registryGlobalListeners = () => {
     //主进程事件监听
