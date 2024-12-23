@@ -1,0 +1,52 @@
+{
+    "name": "electrondemo",
+    "private": true,
+    "version": "0.0.1",
+    "main": "src/main/main.js",
+    "scripts": {
+        "dev": "cross-env NODE_ENV=dev concurrently vite \"electron .\"",
+        "dist": "cross-env NODE_ENV=prod vite build && electron-builder",
+        "build": "cross-env NODE_ENV=prod vite build",
+        "pack": "cross-env NODE_ENV=prod electron-builder"
+    },
+    "dependencies": {
+        "mitt": "^3.0.0",
+        "pinia": "^2.0.13",
+        "pinia-plugin-persist": "^1.0.0",
+        "vue": "^3.2.25",
+        "vue-router": "^4.0.14",
+        "vue3-lazyload": "^0.3.6"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^2.3.0",
+        "concurrently": "^7.1.0",
+        "cross-env": "^7.0.3",
+        "electron": ">=18.0.0",
+        "electron-builder": "^22.14.13",
+        "vite": "^2.9.0",
+        "wait-on": "^6.0.1"
+    },
+    "build": {
+        "appId": "xyz.hxl.demo",
+        "productName": "electron demo",
+        "copyright": "Copyright © HXL2024",
+        "directories": {
+            "output": "output"
+        },
+        "mac": {
+            "icon": "dist/icon.icns"
+        },
+        "win": {
+            "icon": "dist/favicon.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "perMachine": true,
+            "deleteAppDataOnUninstall": true
+        },
+        "linux": {
+            "icon": "dist/icon@2x.png"
+        }
+    }
+}
