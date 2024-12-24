@@ -1,15 +1,76 @@
 <script setup>
 import TitleBar from './components/TitleBar.vue';
+import { useRouter } from 'vue-router';
 import { useIpcRenderer } from '../common/Utils';
-import { setSysConfig } from '@/estore/estore.js';
+import logo from '../../public/images/alpha-logo.png';
+import { onBeforeMount, onMounted } from 'vue';
+import { useSysStore } from './store/sysStore';
 
+const router = useRouter()
 const ipcRenderer = useIpcRenderer()
+const sys = useSysStore()
 
-
+let bookVisible = false
+onBeforeMount(() => {
+  if (router.path == '/read') {
+    bookVisible = true
+  }
+})
+onMounted(() => {
+  // 监听更新数据消息
+  ipcRenderer.on('update-data', (event, newData) => {
+    console.log(newData);
+    sys.updateAllData(newData)
+  });
+})
 </script>
 
 <template>
-  <div id="app"></div>
+  <div id="app">
+    <el-container>
+      <el-container>
+        <el-aside class="left" v-if="!bookVisible">
+          <div style="position: relative; top: 20px;text-align: center;
+                      display: flex;justify-content: center;align-items: center;
+                      flex-direction: column; color: #fff;font-family: sans-serif;
+                      letter-spacing: 2px;">
+            <el-image
+              style="width: 40px; height: 40px"
+              :src="logo"
+              class="logo"></el-image>
+          </div>
+          <el-menu
+            :default-active="$route.fullPath" router :collapse="true"
+            style="margin-left: 18px; margin-top: 50px" background-color="#1e222d">
+            <el-menu-item index="/">
+              <el-icon>
+                <Notebook />
+              </el-icon>
+              <span slot="title">使用说明</span>
+            </el-menu-item>
+            <el-menu-item index="/book">
+              <el-icon>
+                <Shop />
+              </el-icon>
+              <span slot="title">我的书架</span>
+            </el-menu-item>
+            <el-menu-item index="/config">
+              <el-icon>
+                <Setting />
+              </el-icon>
+              <span slot="title">配置</span>
+            </el-menu-item>
+          </el-menu>
+        </el-aside>
+        <TitleBar v-if="!bookVisible"></TitleBar>
+        <el-container :style="{ marginTop: !bookVisible ? '40px' : '0' }">
+          <el-main class="main">
+            <router-view></router-view>
+          </el-main>
+        </el-container>
+      </el-container>
+    </el-container>
+  </div>
 </template>
 
 <style lang="scss">

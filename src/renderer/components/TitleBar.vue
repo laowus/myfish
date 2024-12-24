@@ -1,5 +1,5 @@
 <script setup>
-const { ipcRenderer } = window.require('electron');
+
 import { useIpcRenderer } from '../../common/Utils';
 
 let winStata = false
@@ -11,7 +11,7 @@ const handleMinimize = () => {
 
 const handleClose = () => {
     ipcRenderer.send('window-close');
-},
+}
 </script>
 
 <template>

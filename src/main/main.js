@@ -6,7 +6,7 @@ const { isMacOS, isWinOS, useCustomTrafficLight, isDevEnv,
     USER_AGENT, USER_AGENT_APPLE, AUDIO_EXTS, IMAGE_EXTS, APP_ICON } = require('./env')
 const path = require('path')
 let mainWin = null
-const appWidth = 1080, appHeight = 720
+const appWidth = 1024, appHeight = 768
 /* 自定义函数 */
 const startup = () => {
     init()
@@ -51,16 +51,7 @@ ipcMain.on('window-close', event => {
     win.hide();
 });
 
-// 处理获取存储值的请求
-ipcMain.handle('getSysConfig', (event, key) => {
-    return sysConfigStore.get(key);
-});
-ipcMain.handle('setSysConfig', (event, key, val) => {
-    sysConfigStore.set(key, val);
-});
-ipcMain.handle('deleteSysConfig', (event, key, val) => {
-    sysConfigStore.delete(key);
-});
+
 
 //全局事件监听
 const registryGlobalListeners = () => {
@@ -94,6 +85,8 @@ const createWindow = () => {
         height: appHeight,
         minWidth: appWidth,
         minHeight: appHeight,
+        show: false,
+        frame: false,
         // titleBarStyle: 'hidden',
         trafficLightPosition: { x: 15, y: 15 },
         transparent: true,
