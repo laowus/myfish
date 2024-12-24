@@ -87,7 +87,7 @@ const createWindow = () => {
         minHeight: appHeight,
         show: false,
         frame: false,
-        // titleBarStyle: 'hidden',
+        backgroundColor: '#1e222d',
         trafficLightPosition: { x: 15, y: 15 },
         transparent: true,
         webPreferences: {

@@ -1,7 +1,5 @@
 <script setup>
-
 import { useIpcRenderer } from '../../common/Utils';
-
 let winStata = false
 const ipcRenderer = useIpcRenderer()
 
@@ -16,12 +14,17 @@ const handleClose = () => {
 
 <template>
     <div class="title-bar">
+        <div class="title-bar-dragger"></div>
         <ul class="window-actions">
             <li @click="handleMinimize">
-                <i class="el-icon-minus"> </i>
+                <el-icon>
+                    <Minus />
+                </el-icon>
             </li>
             <li class="win-close-btn" @click="handleClose">
-                <i class="el-icon-close"></i>
+                <el-icon>
+                    <Close />
+                </el-icon>
             </li>
 
         </ul>
@@ -37,7 +40,8 @@ const handleClose = () => {
     flex-direction: row;
     width: 100%;
     height: 40px;
-    z-index: 5000;
+    z-index: 10;
+    background-color: #fefefe;
 
     .title-bar-dragger {
         margin: 5px 0 0 5px;

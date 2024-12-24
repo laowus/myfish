@@ -28,46 +28,45 @@ onMounted(() => {
 <template>
   <div id="app">
     <el-container>
-      <el-container>
-        <el-aside class="left" v-if="!bookVisible">
-          <div style="position: relative; top: 20px;text-align: center;
-                      display: flex;justify-content: center;align-items: center;
-                      flex-direction: column; color: #fff;font-family: sans-serif;
-                      letter-spacing: 2px;">
-            <el-image
-              style="width: 40px; height: 40px"
-              :src="logo"
-              class="logo"></el-image>
-          </div>
-          <el-menu
-            :default-active="$route.fullPath" router :collapse="true"
-            style="margin-left: 18px; margin-top: 50px" background-color="#1e222d">
-            <el-menu-item index="/">
-              <el-icon>
-                <Notebook />
-              </el-icon>
-              <span slot="title">使用说明</span>
-            </el-menu-item>
-            <el-menu-item index="/book">
-              <el-icon>
-                <Shop />
-              </el-icon>
-              <span slot="title">我的书架</span>
-            </el-menu-item>
-            <el-menu-item index="/config">
-              <el-icon>
-                <Setting />
-              </el-icon>
-              <span slot="title">配置</span>
-            </el-menu-item>
-          </el-menu>
-        </el-aside>
-        <TitleBar v-if="!bookVisible"></TitleBar>
-        <el-container :style="{ marginTop: !bookVisible ? '40px' : '0' }">
-          <el-main class="main">
-            <router-view></router-view>
-          </el-main>
-        </el-container>
+      <el-aside class="left" v-if="!bookVisible">
+        <div
+          style="position: relative; top: 20px; text-align: center;
+                   display: flex; justify-content: center; align-items: center;
+                   flex-direction: column; color: #fff; font-family: sans-serif;
+                     letter-spacing: 2px;">
+          <el-image
+            style="width: 40px; height: 40px"
+            :src="logo"
+            class="logo"></el-image>
+        </div>
+        <el-menu
+          :default-active="$route.fullPath" router :collapse="true"
+          style="margin-left: 18px; margin-top: 50px" background-color="#1e222d">
+          <el-menu-item index="/">
+            <el-icon>
+              <Notebook />
+            </el-icon>
+            <template #title>使用说明</template>
+          </el-menu-item>
+          <el-menu-item index="/book">
+            <el-icon>
+              <Shop />
+            </el-icon>
+            <template #title>我的书架</template>
+          </el-menu-item>
+          <el-menu-item index="/config">
+            <el-icon>
+              <Setting />
+            </el-icon>
+            <template #title>配置</template>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <TitleBar v-if="!bookVisible"></TitleBar>
+      <el-container :style="{ marginTop: !bookVisible ? '40px' : '0' }">
+        <el-main class="main">
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </div>
@@ -119,6 +118,7 @@ body {
   height: calc(100vh);
   /* width: var(--left-width) !important; */
   width: 100px !important;
+  z-index: 11;
 
   .logo:hover {
     transform: scale(1.2);
@@ -128,7 +128,7 @@ body {
 }
 
 .main {
-  /* background-color: #fefefe; */
+  background-color: #fefefe;
   color: #333;
   height: calc(100vh);
 }
