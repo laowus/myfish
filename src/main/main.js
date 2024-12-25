@@ -89,7 +89,6 @@ const createWindow = () => {
         minHeight: appHeight,
         show: false,
         frame: false,
-        trafficLightPosition: { x: 15, y: 15 },
         webPreferences: {
             // preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
@@ -184,6 +183,16 @@ ipcMain.on('readFiles', async (event, data) => {
         event.reply('fileContent', txtFiles);
     } catch (err) {
         event.reply('readFilesError', err);
+    }
+});
+
+ipcMain.handle('open-books-folder', async event => {
+    const filePath = path.join(__dirname, '../../books');
+    try {
+        shell.openPath(filePath);
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 });
 
