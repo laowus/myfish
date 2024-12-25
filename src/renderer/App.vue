@@ -1,14 +1,13 @@
 <script setup>
 import TitleBar from './components/TitleBar.vue';
 import { useRouter } from 'vue-router';
-import { useIpcRenderer } from '../common/Utils';
+const { ipcRenderer } = window.require('electron');
 import logo from '../../public/images/alpha-logo.png';
 import { onBeforeMount, onMounted } from 'vue';
-import { useSysStore } from './store/sysStore';
+import { useSettingStore } from './store/settingStore';
 
 const router = useRouter()
-const ipcRenderer = useIpcRenderer()
-const sys = useSysStore()
+const setting = useSettingStore()
 
 let bookVisible = false
 onBeforeMount(() => {
@@ -20,7 +19,7 @@ onMounted(() => {
   // 监听更新数据消息
   ipcRenderer.on('update-data', (event, newData) => {
     console.log(newData);
-    sys.updateAllData(newData)
+    setting.updateAllData(newData)
   });
 })
 </script>
@@ -41,7 +40,7 @@ onMounted(() => {
         </div>
         <el-menu
           :default-active="$route.fullPath" router :collapse="true"
-          style="margin-left: 18px; margin-top: 50px" background-color="#1e222d">
+          style="margin-left: 10px; margin-top: 40px" background-color="#1e222d">
           <el-menu-item index="/">
             <el-icon>
               <Notebook />
@@ -117,7 +116,7 @@ body {
   background-color: #1e222d;
   height: calc(100vh);
   /* width: var(--left-width) !important; */
-  width: 100px !important;
+  width: 80px !important;
   z-index: 11;
 
   .logo:hover {
@@ -141,6 +140,7 @@ body {
 .el-menu-item {
   border-radius: 10px;
   margin: 20px 0;
+  color: #999999 !important;
 }
 
 .el-menu-item:focus,

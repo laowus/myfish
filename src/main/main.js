@@ -4,9 +4,13 @@ const { app, BrowserWindow, ipcMain,
     globalShortcut, session } = require('electron')
 const { isMacOS, isWinOS, useCustomTrafficLight, isDevEnv,
     USER_AGENT, USER_AGENT_APPLE, AUDIO_EXTS, IMAGE_EXTS, APP_ICON } = require('./env')
+const fs = require('fs');
 const path = require('path')
+const rootDir = process.cwd();
+const FOLDER_PATH = path.join(rootDir, 'books');
+
 let mainWin = null
-const appWidth = 1024, appHeight = 768
+const appWidth = 800, appHeight = 600
 /* 自定义函数 */
 const startup = () => {
     init()
@@ -51,8 +55,6 @@ ipcMain.on('window-close', event => {
     win.hide();
 });
 
-
-
 //全局事件监听
 const registryGlobalListeners = () => {
     //主进程事件监听
@@ -87,13 +89,12 @@ const createWindow = () => {
         minHeight: appHeight,
         show: false,
         frame: false,
-        backgroundColor: '#1e222d',
         trafficLightPosition: { x: 15, y: 15 },
-        transparent: true,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            // preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
-            webSecurity: false  //TODO 有风险，暂时保留此方案，留待后期调整
+            contextIsolation: false,
+            // webSecurity: false  //TODO 有风险，暂时保留此方案，留待后期调整
         }
     })
 
@@ -106,10 +107,33 @@ const createWindow = () => {
         mainWindow.loadFile('dist/index.html')
     }
 
+    const tray = new Tray(path.join(rootDir, 'public/images/logo.png'));
+    tray.setToolTip('fish-book');
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: '打开主界面',
+            icon: path.join(rootDir, 'public/images/app.png'),
+            click: () => {
+                mainWindow.show();
+            },
+        },
+        {
+            label: '退出',
+            icon: path.join(rootDir, 'public/images/quit.png'),
+            click: function () {
+                app.quit();
+            },
+        },
+    ])
+    tray.setContextMenu(contextMenu);
+    // 监听托盘双击事件
+    tray.on('double-click', () => {
+        mainWindow.show();
+    });
+
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
     })
-
 
     return mainWindow
 }
@@ -146,6 +170,22 @@ const setAppWindowZoom = (value, noResize) => {
         mainWin.center()
     }
 }
+
+
+// 监听从渲染进程发送的消息
+ipcMain.on('readFiles', async (event, data) => {
+    try {
+        console.log("FOLDER_PATH", FOLDER_PATH)
+        // 读取文件夹中所有文件
+        const files = await fs.promises.readdir(FOLDER_PATH);
+        // 过滤出txt文件
+        const txtFiles = files.filter(file => path.extname(file) === '.txt');
+        console.log("txtFiles", txtFiles);
+        event.reply('fileContent', txtFiles);
+    } catch (err) {
+        event.reply('readFilesError', err);
+    }
+});
 
 //启动应用
 startup()

@@ -1,5 +1,13 @@
 <script setup>
+import logo from '../../../public/images/logo.png';
+const { shell } = window.require('electron');
+import { shortcutSettings } from '../config/sysConfig';
+const gitRepo = 'https://github.com/3529/fish-book';
+const officialWebsite = 'http://www.fish-book.com';
 
+const openUrl = (url) => {
+    shell.openExternal(url);
+}
 </script>
 
 <template>
@@ -18,16 +26,12 @@
             <div class="shortDesc">
                 <h4>阅读器 - 默认快捷键</h4>
                 <ul>
-                    <li>上一页：</li>
-                    <li>下一页：</li>
-                    <li>老板键：</li>
+                    <li>上一页：{{ shortcutSettings.key1 }}</li>
+                    <li>下一页：{{ shortcutSettings.key2 }}</li>
+                    <li>老板键：{{ shortcutSettings.key3 }}</li>
                 </ul>
-                <h4>
-                    更多功能请点击左侧菜单
-                    <span style="color: #008aff">配置</span>
-                    按钮自行设置
-                </h4>
-                <a href="#" @click="">访问官网</a>
+
+                <a href="#" @click="openUrl(officialWebsite)">访问官网</a>
             </div>
         </div>
     </div>
@@ -42,7 +46,7 @@
     justify-content: center;
     height: 80vh;
     overflow: hidden;
-    margin: 30px;
+    margin: 10px;
     border-radius: 20px;
     color: #333333;
 }

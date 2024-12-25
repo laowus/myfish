@@ -1,7 +1,6 @@
 <script setup>
-import { useIpcRenderer } from '../../common/Utils';
+const { ipcRenderer } = window.require('electron');
 let winStata = false
-const ipcRenderer = useIpcRenderer()
 
 const handleMinimize = () => {
     ipcRenderer.send('window-min')
@@ -26,7 +25,6 @@ const handleClose = () => {
                     <Close />
                 </el-icon>
             </li>
-
         </ul>
     </div>
 </template>

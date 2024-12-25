@@ -11,7 +11,10 @@
     },
     "dependencies": {
         "@element-plus/icons-vue": "^2.3.1",
+        "electron-store": "^10.0.0",
         "element-plus": "^2.9.1",
+        "fs": "^0.0.1-security",
+        "iconv-lite": "^0.6.3",
         "mitt": "^3.0.0",
         "pinia": "^2.0.13",
         "pinia-plugin-persist": "^1.0.0",
@@ -26,6 +29,7 @@
         "cross-env": "^7.0.3",
         "electron": "^25.0.1",
         "electron-builder": "^22.14.13",
+        "jschardet": "^3.1.4",
         "vite": "^2.9.0",
         "wait-on": "^6.0.1"
     },
