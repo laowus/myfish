@@ -1,15 +1,19 @@
-const { app, BrowserWindow, ipcMain,
-    Menu, dialog, powerMonitor,
-    shell, powerSaveBlocker, Tray,
-    globalShortcut, session } = require('electron')
-const { isMacOS, isWinOS, useCustomTrafficLight, isDevEnv,
-    USER_AGENT, USER_AGENT_APPLE, AUDIO_EXTS, IMAGE_EXTS, APP_ICON } = require('./env')
+const { app, BrowserWindow, ipcMain, Menu, shell, Tray, } = require('electron')
+const { isWinOS, isDevEnv, APP_ICON } = require('./env')
 const fs = require('fs');
 const path = require('path')
-const rootDir = process.cwd();
-const FOLDER_PATH = path.join(rootDir, 'books');
 
-let mainWin = null
+let FOLDER_PATH = path.join(__dirname, '../../books');
+let resourcesRoot = path.resolve(app.getAppPath());
+let publicRoot = path.join(__dirname, '../../public')
+
+if (!isDevEnv) {
+    resourcesRoot = path.dirname(resourcesRoot);
+    FOLDER_PATH = path.join(resourcesRoot, "/books")
+    publicRoot = path.join(__dirname, '../../dist')
+}
+
+let mainWin = null, tray = null
 const appWidth = 800, appHeight = 600
 /* 自定义函数 */
 const startup = () => {
@@ -55,6 +59,7 @@ ipcMain.on('window-close', event => {
     win.hide();
 });
 
+
 //全局事件监听
 const registryGlobalListeners = () => {
     //主进程事件监听
@@ -93,39 +98,40 @@ const createWindow = () => {
             // preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             contextIsolation: false,
-            // webSecurity: false  //TODO 有风险，暂时保留此方案，留待后期调整
+            webSecurity: false  //TODO 有风险，暂时保留此方案，留待后期调整
         }
     })
 
     if (isDevEnv) {
-        mainWindow.loadURL("http://localhost:2000/")
+        mainWindow.loadURL("http://localhost:7000/")
         // Open the DevTools.
-        mainWindow.webContents.openDevTools()
+
     } else {
         // Load the index.html of the app.
         mainWindow.loadFile('dist/index.html')
     }
+    mainWindow.webContents.openDevTools()
 
-    const tray = new Tray(path.join(rootDir, 'public/images/logo.png'));
+    tray = new Tray(path.join(publicRoot, '/images/logo.png'));
     tray.setToolTip('fish-book');
     const contextMenu = Menu.buildFromTemplate([
         {
             label: '打开主界面',
-            icon: path.join(rootDir, 'public/images/app.png'),
+            icon: path.join(publicRoot, '/images/app.png'),
             click: () => {
                 mainWindow.show();
             },
         },
         {
             label: '退出',
-            icon: path.join(rootDir, 'public/images/quit.png'),
+            icon: path.join(publicRoot, '/images/quit.png'),
             click: function () {
                 app.quit();
             },
         },
     ])
     tray.setContextMenu(contextMenu);
-    // 监听托盘双击事件
+    //监听托盘双击事件
     tray.on('double-click', () => {
         mainWindow.show();
     });
@@ -187,9 +193,10 @@ ipcMain.on('readFiles', async (event, data) => {
 });
 
 ipcMain.handle('open-books-folder', async event => {
-    const filePath = path.join(__dirname, '../../books');
+    // const filePath = path.join(__dirname, '../../books');
+    // console.log(filePath)
     try {
-        shell.openPath(filePath);
+        shell.openPath(FOLDER_PATH);
     } catch (error) {
         console.error(error);
         return null;

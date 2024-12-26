@@ -5,21 +5,25 @@ import { onMounted, ref, reactive } from 'vue';
 import { useSettingStore } from '../store/settingStore.js';
 const { data, setBooksInfo } = useSettingStore()
 const { currentBookName } = storeToRefs(useSettingStore())
-let rows = [], booksInfo = []
+
 const shelf = ref(null);
-const books = ref([])
 const loading = ref(true)
+const books = ref([])
+const rows = ref([])
+const booksInfo = ref([])
 
 const syncBooksInfo = (bks) => {
-    booksInfo = data.booksInfo
-    if (!booksInfo) {
+    // booksInfo.value = data.booksInfo
+    console.log(bks)
+    if (data.booksInfo.length > 0) {
+        console.log(data.booksInfo)
         setBooksInfo([])
-        booksInfo = [];
+        booksInfo.value = [];
     }
     for (let i = 0; i < bks.length; i++) {
         let bookName = bks[i];
         // 检查该书籍是否已经存在于booksInfo中
-        let existingBookInfo = booksInfo.find(info => info.bookName === bookName);
+        let existingBookInfo = booksInfo.value.find(info => info.bookName === bookName);
         if (existingBookInfo) {
             continue; // 如果已经存在，则跳过该书籍的处理
         }
@@ -31,16 +35,9 @@ const syncBooksInfo = (bks) => {
             content: `欢迎使用fish-book当前（${bookName}）`,
             total: -1,
         };
-        booksInfo.push(newBookInfo);
+        booksInfo.value.push(newBookInfo);
     }
-    if (booksInfo.length) setBooksInfo(booksInfo)
-}
-
-
-const getRandomImage = () => {
-    const randomNum = Math.floor(Math.random() * 300) + 1;
-    // return `url('https://picsum.photos/id/${randomNum}/160/240')`;
-    return `url('https://tuapi.eees.cc/api.php?category=fengjing&type=302&px=m&rdm=${randomNum}')`;
+    if (booksInfo.value.length) setBooksInfo(booksInfo.value)
 }
 
 const getRandomColor = () => {
@@ -62,8 +59,7 @@ const getLocalFiles = () => {
                 name: item,
                 title: item.replace('.txt', '').replace('《', '').replace('》', ''),
                 author: 'fish-book',
-                bgImg: getRandomImage(),
-                ...booksInfo.find(book => book.bookName === item),
+                ...booksInfo.value.find(book => book.bookName === item),
             };
         });
         initView();
@@ -89,12 +85,12 @@ const initView = async () => {
     const rowCount = Math.floor(shelfWidth / itemWidth);
     let rowIndex = 0;
     let colIndex = 0;
-    rows = [];
-    rows[rowIndex] = [];
+    rows.value = [];
+    rows.value[rowIndex] = [];
     books.value.forEach(
         book => {
             const color = getRandomColor();
-            rows[rowIndex][colIndex] = {
+            rows.value[rowIndex][colIndex] = {
                 ...book,
                 color,
                 hover: false,
@@ -103,7 +99,7 @@ const initView = async () => {
             if (colIndex >= rowCount) {
                 colIndex = 0;
                 rowIndex++;
-                rows[rowIndex] = [];
+                rows.value[rowIndex] = [];
             }
         }
     )
@@ -144,8 +140,23 @@ onMounted(() => {
             </div>
         </h2>
         <div class="book-shelf" ref="shelf" v-loading="loading" v-show="books.length">
-            {{ books.length }}
+            <div class="shelf-row" v-for="(row, index) in rows" :key="index" v-show="!loading">
+                <div v-for="(item, itemIndex) in row" :key="itemIndex" :style="{ backgroundColor: item.color }" :class="{ 'shelf-item': true, active: item.name == currentBookName }">
+                    <div class="info">
+                        <span class="while-reading" v-if="item.name == currentBookName">
+                            阅读中
+                        </span>
 
+                        <div class="title" :style="{ color: item.hover ? '#fff' : '#eee' }">
+                            {{ item.title }}
+                        </div>
+
+                        <div class="progress" v-if="item.bookProgress">
+                            已读 {{ item.bookProgress }}%
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -187,8 +198,8 @@ onMounted(() => {
 }
 
 .shelf-item {
-    width: 160px;
-    height: 240px;
+    width: 80px;
+    height: 120px;
     margin: 10px;
     position: relative;
     border-radius: 5px;
@@ -242,7 +253,7 @@ onMounted(() => {
 }
 
 .title {
-    font-size: 18px;
+    font-size: 13px;
     font-weight: bold;
     margin: 0 10px;
     margin-bottom: 5px;
