@@ -40,7 +40,7 @@ onMounted(() => {
         </div>
         <el-menu
           :default-active="$route.fullPath" router :collapse="true"
-          style="margin-left: 0px; margin-top: 20px;" background-color="#1e222d">
+          style="margin-left: 10px; margin-top: 20px;" background-color="#1e222d">
           <el-menu-item index="/">
             <el-icon>
               <Notebook />
@@ -109,7 +109,7 @@ body {
 }
 
 .top {
-  background-color: #272f3f;
+  background-color: #1f2127;
   color: white;
   height: var(--top-height) !important;
 }
@@ -118,7 +118,7 @@ body {
   background-color: #1e222d;
   height: calc(100vh);
   /* width: var(--left-width) !important; */
-  width: 40px !important;
+  width: 54px !important;
   z-index: 11;
 
   .logo:hover {
