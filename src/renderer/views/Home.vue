@@ -1,4 +1,12 @@
 <script setup>
+import { ref } from 'vue'
+
+const showUpbtn = ref(false)
+
+const handleChange = (uploadFile, uploadFiles) => {
+    console.log(uploadFile, uploadFiles)
+    showUpbtn.value = true
+}
 
 </script>
 
@@ -10,7 +18,9 @@
                 <el-upload
                     class="upload-demo"
                     drag
-                    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                    action="#"
+                    :auto-upload="false"
+                    :on-change="handleChange"
                     multiple>
                     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                     <div class="el-upload__text">
@@ -22,6 +32,9 @@
                         </div>
                     </template>
                 </el-upload>
+                <el-button class="ml-3" type="success" @click="" v-show="showUpbtn">
+                    导入
+                </el-button>
             </div>
             <div class="booklist">
 
