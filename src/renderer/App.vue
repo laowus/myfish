@@ -34,13 +34,13 @@ onMounted(() => {
                    flex-direction: column; color: #fff; font-family: sans-serif;
                      letter-spacing: 2px;">
           <el-image
-            style="width: 40px; height: 40px"
+            style="width: 30px; height: 30px"
             :src="logo"
             class="logo"></el-image>
         </div>
         <el-menu
           :default-active="$route.fullPath" router :collapse="true"
-          style="margin-left: 10px; margin-top: 40px" background-color="#1e222d">
+          style="margin-left: 0px; margin-top: 20px;" background-color="#1e222d">
           <el-menu-item index="/">
             <el-icon>
               <Notebook />
@@ -62,7 +62,7 @@ onMounted(() => {
         </el-menu>
       </el-aside>
       <TitleBar v-if="!bookVisible"></TitleBar>
-      <el-container :style="{ marginTop: !bookVisible ? '40px' : '0' }">
+      <el-container :style="{ marginTop: !bookVisible ? '10px' : '0' }">
         <el-main class="main">
           <router-view></router-view>
         </el-main>
@@ -75,6 +75,8 @@ onMounted(() => {
 :root {
   --left-width: 30px !important;
   --top-height: 90px;
+  --el-menu-base-level-padding: 4px !important;
+  --el-menu-level-padding: 4px !important;
 }
 
 ::-webkit-scrollbar {
@@ -116,7 +118,7 @@ body {
   background-color: #1e222d;
   height: calc(100vh);
   /* width: var(--left-width) !important; */
-  width: 80px !important;
+  width: 40px !important;
   z-index: 11;
 
   .logo:hover {
@@ -137,10 +139,13 @@ body {
   overflow-x: hidden;
 }
 
+
 .el-menu-item {
-  border-radius: 10px;
-  margin: 20px 0;
+  border-radius: 20px;
+  margin: 30px 2px;
   color: #999999 !important;
+  width: 30px !important;
+  height: 30px !important;
 }
 
 .el-menu-item:focus,
@@ -157,35 +162,8 @@ body {
   color: white !important;
 }
 
-.episodeCell {
-  min-width: var(--left-width) !important;
-  padding: 5px 5px 5px 30px !important;
-}
-
-.episodeCellParagraph {
-  line-height: 15px !important;
-  font-size: 15px !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .activeItem {
   color: rgb(255, 90, 90) !important;
-}
-
-.previewLine1 {
-  text-align: center;
-  color: snow;
-  font-size: 15px;
-  text-overflow: ellipsis;
-  height: 25px;
-}
-
-.previewLine2 {
-  text-align: center;
-  color: lightgray;
-  font-size: 15px;
-  text-overflow: ellipsis;
-  height: 25px;
 }
 </style>
