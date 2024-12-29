@@ -192,6 +192,32 @@ ipcMain.on('readFiles', async (event, data) => {
     }
 });
 
+const copyFile = (source, destination, callback) => {
+    const readStream = fs.createReadStream(source);
+    const writeStream = fs.createWriteStream(destination);
+    readStream.on('error', (error) => callback(error, null));
+    writeStream.on('error', (error) => callback(error, null));
+    writeStream.on('close', () => callback(null, destination));
+    readStream.pipe(writeStream);
+}
+
+ipcMain.on('addBooks', async (event, data) => {
+    console.log(data)
+    if (data.length > 1) {
+        data.forEach(item => {
+            const sourcePath = item.path;
+            const destinationPath = path.join(FOLDER_PATH, item.name);
+            copyFile(sourcePath, destinationPath, (error, destination) => {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                console.log(`文件复制成功: ${destination}`);
+            });
+        });
+    }
+})
+
 ipcMain.handle('open-books-folder', async event => {
     // const filePath = path.join(__dirname, '../../books');
     // console.log(filePath)

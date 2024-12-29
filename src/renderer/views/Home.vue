@@ -1,10 +1,18 @@
 <script setup>
 import { ref } from 'vue'
+const { ipcRenderer } = window.require('electron');
 
 const dialogFormVisible = ref(false);
 let fileList = []
 const getFiles = () => {
-    console.log(fileList)
+    if (fileList.length > 1) {
+        const books = fileList.map(
+            file => ({ name: file.name, uid: file.uid, path: file.raw.path })
+        )
+        ipcRenderer.send('addBooks', books)//复制文件到books文件夹中
+    }
+
+
 }
 const handleChange = (file, uploadFiles) => {
     fileList = uploadFiles
