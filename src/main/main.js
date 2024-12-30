@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain, Menu, shell, Tray, } = require('electron')
 const { isWinOS, isDevEnv, APP_ICON } = require('./env')
 const fs = require('fs');
 const path = require('path')
+const configDir = app.getPath("userData");
+const dirPath = path.join(configDir, "uploads");
 
 let FOLDER_PATH = path.join(__dirname, '../../books');
 let resourcesRoot = path.resolve(app.getAppPath());
@@ -190,7 +192,10 @@ ipcMain.on('readFiles', async (event, data) => {
     } catch (err) {
         event.reply('readFilesError', err);
     }
-});
+})
+ipcMain.on("user-data", (event, arg) => {
+    event.returnValue = dirPath;
+})
 
 const copyFile = (source, destination, callback) => {
     const readStream = fs.createReadStream(source);
@@ -228,6 +233,8 @@ ipcMain.handle('open-books-folder', async event => {
         return null;
     }
 });
+
+
 
 //启动应用
 startup()

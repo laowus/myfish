@@ -5,17 +5,37 @@ const { ipcRenderer } = window.require('electron');
 import logo from '../../public/images/alpha-logo.png';
 import { onBeforeMount, onMounted } from 'vue';
 import { useSettingStore } from './store/settingStore';
+const fs = window.require("fs")
+const path = window.require("path")
+
 
 const router = useRouter()
 const setting = useSettingStore()
 
 let bookVisible = false
+
+const initPath = () => {
+  const dirPath = ipcRenderer.sendSync("user-data", "ping")
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath)
+    fs.mkdirSync(path.join(dirPath, "data"))
+    fs.mkdirSync(path.join(dirPath, "data", "book"))
+    console.log("folder created")
+  } else {
+    console.log("folder exist")
+  }
+
+}
+
 onBeforeMount(() => {
+  initPath()
   if (router.path == '/read') {
     bookVisible = true
   }
+
 })
 onMounted(() => {
+
   // 监听更新数据消息
   ipcRenderer.on('update-data', (event, newData) => {
     console.log(newData);

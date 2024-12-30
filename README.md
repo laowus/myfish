@@ -2,6 +2,8 @@
 
 ### 1. 读取文件信息, 读入 localstore 中..
 
+    2. localforage
+
     * 读取文件 解析信息
 
     * 封面 cover
