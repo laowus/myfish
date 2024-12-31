@@ -1,19 +1,23 @@
 <script setup>
 import { ref } from 'vue'
+import { fetchMD5 } from '../utils/fileUtils/md5Util'
+import Book from "../models/Book";
 const { ipcRenderer } = window.require('electron');
+
 
 const dialogFormVisible = ref(false);
 let fileList = []
 const getFiles = () => {
     if (fileList.length > 1) {
-        const books = fileList.map(
-            file => ({ name: file.name, uid: file.uid, path: file.raw.path })
+        fileList.map(
+            file => {
+                getMd5WithBrowser(file)
+            }
         )
-        ipcRenderer.send('addBooks', books)//复制文件到books文件夹中
     }
 
-
 }
+
 const handleChange = (file, uploadFiles) => {
     fileList = uploadFiles
 }
@@ -21,6 +25,71 @@ const handleChange = (file, uploadFiles) => {
 const handleRemove = (file, uploadFiles) => {
     fileList = uploadFiles
 }
+//处理导入文件
+const handleBook = (file, md5) => {
+    //格式, 如epub
+    let extension = file.name.split(".").reverse()[0].toLocalLowerCase()
+    //文件名 如xx.epub, xx
+    let bookName = file.name.substr(0, file.name.length - extension.length - 1)
+    let result
+    return new Promise((resolve, reject) => {
+        let isRepeat = false
+        if (!isRepeat) {
+            let reader = new FileReader()
+            reader.readAsArrayBuffer(file);
+            reader.onload = async (e) => {
+                if (!e.target) {
+                    console.log("导入", bookName, "失败")
+                    return resolve();
+                }
+                let reader = new FileReader()
+                reader.onload = async (event) => {
+                    const file_content = (event.target).result
+                    try {
+                        result = await new Book(
+
+                        )
+
+                    } catch (error) {
+                        console.log(error);
+                        throw error;
+                    }
+                    if (result === "get_metadata_error") {
+                        console.log("导入", bookName, "失败")
+                        return resolve()
+                    }
+                    await handleAddBook()
+                    return resolve();
+                }
+                reader.readAsArrayBuffer(file);
+            }
+        }
+    })
+}
+
+const handleAddBook = (book, buffer) => {
+    return new Promise((resolve, reject) => {
+
+    })
+}
+
+const getMd5WithBrowser = async (file) => {
+    return new Promise(async (resolve, reject) => {
+        const md5 = await fetchMD5(file);
+        if (!md5) {
+            console.log("导入失败")
+            return resolve();
+        } else {
+            try {
+                await handleBook(file, md5);
+            } catch (error) {
+                console.log(error);
+            }
+            return resolve();
+        }
+    });
+};
+
 </script>
 <template>
     <div class="book">
