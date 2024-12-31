@@ -3,18 +3,12 @@
 ### 1. 读取文件信息, 读入 localstore 中..
 
     2. localforage
-
     3. 读取文件, md5文件,然后获取时间戳赋值给key, key为文件名,
        移动到C:\Users\magic\AppData\Roaming\myfish\uploads\book中
-
-    * 读取文件 解析信息
-
     * 封面 cover
     {   //保存书籍名字
         "recentBooks": [
             "1735459625155",
-            "1734513538178",
-            "1734513402077"
         ],//喜爱的书籍
         "favoriteBooks": [
             "1735459625155"
@@ -49,3 +43,12 @@
             "1734513402077": 85,
         }
     }
+
+## todolist
+
+### 1. 导入文件 :
+
+-   导入 localforage 中, 书籍信息+封面 cover(base64)
+-   复制文件到 C:Users\magic\AppData\Roaming\myfish\data\books 中
+
+### 2. 增删改查.
