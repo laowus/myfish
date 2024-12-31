@@ -5,7 +5,6 @@ const { ipcRenderer } = window.require('electron');
 import logo from '../../public/images/alpha-logo.png';
 import { onBeforeMount, onMounted } from 'vue';
 import { useSettingStore } from './store/settingStore';
-import { makeBook } from './reader'
 const fs = window.require("fs")
 const path = window.require("path")
 const router = useRouter()
@@ -33,12 +32,8 @@ onBeforeMount(() => {
   }
 })
 
-const testBook = (filePath) => {
-  const bookInfo = makeBook(filePath)
-  console.log(bookInfo)
-}
 onMounted(() => {
-  testBook("/jin.epub")
+
   // 监听更新数据消息
   ipcRenderer.on('update-data', (event, newData) => {
     console.log(newData);

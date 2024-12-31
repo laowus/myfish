@@ -1,11 +1,38 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { fetchMD5 } from '../utils/fileUtils/md5Util'
+import { makeBook } from '../libs/reader'
 import Book from "../models/Book";
 const { ipcRenderer } = window.require('electron');
-
-
 const dialogFormVisible = ref(false);
+let book
+let cover
+const testBook = async (bookPath) => {
+    if (typeof bookPath === 'string'
+        || typeof bookPath.arrayBuffer === 'function'
+        || bookPath.isDirectory) book = await makeBook(bookPath)
+    cover = await book.getCover()
+    if (cover) {
+        // cover is a blob, so we need to convert it to base64
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(cover)
+        fileReader.onloadend = () => {
+            cover = fileReader.result
+            console.log(cover)
+            //   callFlutter('onMetadata', {
+            //     ...reader.view.book.metadata,
+            //     cover: fileReader.result
+            //   })
+        }
+    } else {
+        // callFlutter('onMetadata', {
+        //   ...reader.view.book.metadata,
+        //   cover: null
+        // })
+    }
+    console.log(cover)
+}
+
 let fileList = []
 const getFiles = () => {
     if (fileList.length > 1) {
@@ -90,6 +117,11 @@ const getMd5WithBrowser = async (file) => {
     });
 };
 
+
+onMounted(() => {
+    testBook("/jin.epub")
+})
+
 </script>
 <template>
     <div class="book">
@@ -135,7 +167,7 @@ const getMd5WithBrowser = async (file) => {
                 </el-button>
             </div>
             <div class="booklist">
-
+                <el-image style="width: 100px; height: 100px" :src="cover" />
             </div>
         </h3>
     </div>
@@ -158,5 +190,26 @@ const getMd5WithBrowser = async (file) => {
         float: left;
     }
 
+}
+
+.demo-image .block {
+    padding: 30px 0;
+    text-align: center;
+    border-right: solid 1px var(--el-border-color);
+    display: inline-block;
+    width: 20%;
+    box-sizing: border-box;
+    vertical-align: top;
+}
+
+.demo-image .block:last-child {
+    border-right: none;
+}
+
+.demo-image .demonstration {
+    display: block;
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
 }
 </style>

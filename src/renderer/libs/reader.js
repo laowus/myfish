@@ -1,4 +1,4 @@
-import * as CFI from './libs/epubcfi.js'
+import * as CFI from './epubcfi.js'
 
 const isZip = async file => {
     const arr = new Uint8Array(await file.slice(0, 4).arrayBuffer())
@@ -24,7 +24,7 @@ const isFBZ = ({ name, type }) =>
 
 const makeZipLoader = async file => {
     const { configure, ZipReader, BlobReader, TextWriter, BlobWriter } =
-        await import('./libs/vendor/zip.js')
+        await import('./vendor/zip.js')
     configure({ useWebWorkers: false })
     const reader = new ZipReader(new BlobReader(file))
     const entries = await reader.getEntries()
@@ -77,40 +77,40 @@ export const makeBook = async file => {
     let book
     if (file.isDirectory) {
         const loader = await makeDirectoryLoader(file)
-        const { EPUB } = await import('./libs/epub.js')
+        const { EPUB } = await import('./epub.js')
         book = await new EPUB(loader).init()
     }
     else if (!file.size) throw new NotFoundError('File not found')
     else if (await isZip(file)) {
         const loader = await makeZipLoader(file)
         if (isCBZ(file)) {
-            const { makeComicBook } = await import('./libs/comic-book.js')
+            const { makeComicBook } = await import('./comic-book.js')
             book = makeComicBook(loader, file)
         }
         else if (isFBZ(file)) {
-            const { makeFB2 } = await import('./libs/fb2.js')
+            const { makeFB2 } = await import('./fb2.js')
             const { entries } = loader
             const entry = entries.find(entry => entry.filename.endsWith('.fb2'))
             const blob = await loader.loadBlob((entry ?? entries[0]).filename)
             book = await makeFB2(blob)
         }
         else {
-            const { EPUB } = await import('./libs/epub.js')
+            const { EPUB } = await import('./epub.js')
             book = await new EPUB(loader).init()
         }
     }
     else if (await isPDF(file)) {
-        const { makePDF } = await import('./libs/pdf.js')
+        const { makePDF } = await import('./pdf.js')
         book = await makePDF(file)
     }
     else {
-        const { isMOBI, MOBI } = await import('./libs/mobi.js')
+        const { isMOBI, MOBI } = await import('./mobi.js')
         if (await isMOBI(file)) {
-            const fflate = await import('./libs/vendor/fflate.js')
+            const fflate = await import('./vendor/fflate.js')
             book = await new MOBI({ unzlib: fflate.unzlibSync }).open(file)
         }
         else if (isFB2(file)) {
-            const { makeFB2 } = await import('./libs/fb2.js')
+            const { makeFB2 } = await import('./fb2.js')
             book = await makeFB2(file)
         }
     }
