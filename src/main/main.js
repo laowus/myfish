@@ -2,7 +2,10 @@ const { app, BrowserWindow, ipcMain, Menu, shell, Tray, } = require('electron')
 const { isWinOS, isDevEnv, APP_ICON } = require('./env')
 const fs = require('fs');
 const path = require('path')
+//C:\Users\magic\AppData\Roaming\myfish 
+// windows下存储目录
 const configDir = app.getPath("userData");
+//C:\Users\magic\AppData\Roaming\myfish\uploads
 const dirPath = path.join(configDir, "uploads");
 
 let FOLDER_PATH = path.join(__dirname, '../../books');
