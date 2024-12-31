@@ -5,12 +5,12 @@ import { makeBook } from '../libs/reader'
 import Book from "../models/Book";
 const { ipcRenderer } = window.require('electron');
 const dialogFormVisible = ref(false);
-let book
-let cover
-const testBook = async (bookPath) => {
-    if (typeof bookPath === 'string'
-        || typeof bookPath.arrayBuffer === 'function'
-        || bookPath.isDirectory) book = await makeBook(bookPath)
+let book, cover
+const coverRef = ref("")
+const testBook = async (book) => {
+    if (typeof book === 'string'
+        || typeof book.arrayBuffer === 'function'
+        || book.isDirectory) book = await makeBook(book)
     cover = await book.getCover()
     if (cover) {
         // cover is a blob, so we need to convert it to base64
@@ -19,18 +19,10 @@ const testBook = async (bookPath) => {
         fileReader.onloadend = () => {
             cover = fileReader.result
             console.log(cover)
-            //   callFlutter('onMetadata', {
-            //     ...reader.view.book.metadata,
-            //     cover: fileReader.result
-            //   })
+            coverRef.value = cover
         }
-    } else {
-        // callFlutter('onMetadata', {
-        //   ...reader.view.book.metadata,
-        //   cover: null
-        // })
     }
-    console.log(cover)
+
 }
 
 let fileList = []
@@ -119,7 +111,7 @@ const getMd5WithBrowser = async (file) => {
 
 
 onMounted(() => {
-    testBook("/jin.epub")
+    testBook("/3.azw3")
 })
 
 </script>
@@ -167,7 +159,7 @@ onMounted(() => {
                 </el-button>
             </div>
             <div class="booklist">
-                <el-image style="width: 100px; height: 100px" :src="cover" />
+                <img :src="coverRef" style="width: 120px;height:180px;" />
             </div>
         </h3>
     </div>
@@ -188,28 +180,8 @@ onMounted(() => {
 
     .booklist {
         float: left;
+        padding-top: 50px;
     }
 
-}
-
-.demo-image .block {
-    padding: 30px 0;
-    text-align: center;
-    border-right: solid 1px var(--el-border-color);
-    display: inline-block;
-    width: 20%;
-    box-sizing: border-box;
-    vertical-align: top;
-}
-
-.demo-image .block:last-child {
-    border-right: none;
-}
-
-.demo-image .demonstration {
-    display: block;
-    color: var(--el-text-color-secondary);
-    font-size: 14px;
-    margin-bottom: 20px;
 }
 </style>
