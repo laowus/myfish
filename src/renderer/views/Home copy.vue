@@ -1,126 +1,40 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { fetchMD5 } from '../utils/fileUtils/md5Util'
-import BookUtil from '../utils/fileUtils/bookUtils'
+import { makeBook } from '../libs/reader'
 import Book from "../models/Book";
 const { ipcRenderer } = window.require('electron');
 const dialogFormVisible = ref(false);
+let book, cover
+const coverRef = ref("")
+const testBook = async (book) => {
+    if (typeof book === 'string'
+        || typeof book.arrayBuffer === 'function'
+        || book.isDirectory) book = await makeBook(book)
+    cover = await book.getCover()
+    if (cover) {
+        // cover is a blob, so we need to convert it to base64
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(cover)
+        fileReader.onloadend = () => {
+            cover = fileReader.result
+            console.log(cover)
+            coverRef.value = cover
+        }
+    }
+
+}
+
 let fileList = []
 const getFiles = () => {
-    if (fileList.length > 0) {
+    if (fileList.length > 1) {
         fileList.map(
-            async (file) => {
-                // 解析文件 文件名 后缀 
-                console.log(file.raw)
-                await getMd5WithBrowser(file.raw)
+            file => {
+                getMd5WithBrowser(file)
             }
         )
     }
-}
 
-const getMd5WithBrowser = async (file) => {
-    return new Promise(async (resolve, reject) => {
-        const md5 = await fetchMD5(file) //md5设置
-        console.log(md5)
-        if (!md5) {
-            ElMessage({
-                message: '导入失败',
-                type: 'error',
-                plain: true,
-            })
-            return resolve()
-        } else {
-            try {
-                // await this.handleBook(file, md5)
-            } catch (error) {
-                console.log(error)
-            }
-
-            return resolve()
-        }
-    })
-}
-
-// if (!md5) {
-//     ElMessage({
-//         message: '导入失败',
-//         type: 'error',
-//         plain: true,
-//     })
-//     return resolve()
-// } else {
-//     try {
-//         await handleBook(file, md5)
-//     } catch (error) {
-//         console.log(error)
-//     }
-//     return resolve()
-// }
-
-
-
-//文件信息 以及md5 02 处理
-// 解析文件 分割 路径
-const handleBook = (file, md5) => {
-    //获取文件后缀
-    let extension = (file.name)
-        .split(".")
-        .reverse()[0]
-        .toLocaleLowerCase()
-    //获取文件名字xxx 如xxx.epub
-    let bookName = file.name.substr(
-        0,
-        file.name.length - extension.length - 1
-    )
-    let result
-    return new Promise((resolve, reject) => {
-        let isRepeat = false
-        if (!isRepeat) {
-            let reader = new FileReader()
-            reader.readAsArrayBuffer(file)
-            reader.onload = async (e) => {
-                if (!e.target) {
-                    ElMessage({
-                        message: '导入失败',
-                        type: 'error',
-                        plain: true,
-                    })
-                    return resolve()
-                }
-                let reader = new FileReader()
-                reader.onload = async (event) => {
-                    const file_content = (event.target).result
-                    try {
-                        result = await BookUtil.generateBook(
-                            bookName,
-                            extension,
-                            md5,
-                            file.size,
-                            file.path,
-                            file
-                        )
-                    } catch (error) {
-                        console.log(error)
-                        throw error
-                    }
-
-                    clickFilePath = ""
-                    if (result === "get_metadata_error") {
-                        toast.error(this.props.t("Import failed"))
-                        return resolve()
-                    }
-                    //把文件复制
-                    // await this.handleAddBook(
-                    //     result,
-                    //     file_content
-                    // )
-
-                    return resolve()
-                }
-                reader.readAsArrayBuffer(file)
-            }
-        }
-    })
 }
 
 const handleChange = (file, uploadFiles) => {
@@ -130,9 +44,74 @@ const handleChange = (file, uploadFiles) => {
 const handleRemove = (file, uploadFiles) => {
     fileList = uploadFiles
 }
+//处理导入文件
+const handleBook = (file, md5) => {
+    //格式, 如epub
+    let extension = file.name.split(".").reverse()[0].toLocalLowerCase()
+    //文件名 如xx.epub, xx
+    let bookName = file.name.substr(0, file.name.length - extension.length - 1)
+    let result
+    return new Promise((resolve, reject) => {
+        let isRepeat = false
+        if (!isRepeat) {
+            let reader = new FileReader()
+            reader.readAsArrayBuffer(file);
+            reader.onload = async (e) => {
+                if (!e.target) {
+                    console.log("导入", bookName, "失败")
+                    return resolve();
+                }
+                let reader = new FileReader()
+                reader.onload = async (event) => {
+                    const file_content = (event.target).result
+                    try {
+                        result = await new Book(
+
+                        )
+
+                    } catch (error) {
+                        console.log(error);
+                        throw error;
+                    }
+                    if (result === "get_metadata_error") {
+                        console.log("导入", bookName, "失败")
+                        return resolve()
+                    }
+                    await handleAddBook()
+                    return resolve();
+                }
+                reader.readAsArrayBuffer(file);
+            }
+        }
+    })
+}
+
+const handleAddBook = (book, buffer) => {
+    return new Promise((resolve, reject) => {
+
+    })
+}
+
+const getMd5WithBrowser = async (file) => {
+    return new Promise(async (resolve, reject) => {
+        const md5 = await fetchMD5(file);
+        if (!md5) {
+            console.log("导入失败")
+            return resolve();
+        } else {
+            try {
+                await handleBook(file, md5);
+            } catch (error) {
+                console.log(error);
+            }
+            return resolve();
+        }
+    });
+};
+
 
 onMounted(() => {
-
+    testBook("/3.azw3")
 })
 
 </script>
@@ -180,7 +159,7 @@ onMounted(() => {
                 </el-button>
             </div>
             <div class="booklist">
-
+                <img :src="coverRef" style="width: 120px;height:180px;" />
             </div>
         </h3>
     </div>

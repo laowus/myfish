@@ -44,6 +44,20 @@
         }
     }
 
+    0:
+        author: "天末zz"
+        charset: ""
+        cover: ""//base64位
+        description: ""
+        format: "EPUB"
+        key: "1735716858370"// key = new Date().getTime() + ""
+        md5: "5b10d3f135a86b1a79d1364fd560c803"// 作为一个文件的最终唯一代码 + size一起判断
+        name: "孙子兵法曹操注"
+        page: 0
+        path: "C:\\Users\\HXL\\Desktop\\1epub\\3.epub"
+        publisher: ""
+        size: 59802
+
 ## todolist
 
 ### 1. 导入文件 :
