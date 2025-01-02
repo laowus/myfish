@@ -1,5 +1,3 @@
-
-
 import { ElMessage } from 'element-plus' //引入message弹出框
 
 let messageDom = null
@@ -15,4 +13,4 @@ typeArr.forEach(type => {
         return resetMessage(options)
     }
 })
-export const message = resetMessage
+export const Message = resetMessage

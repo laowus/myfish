@@ -1,10 +1,11 @@
 <script setup>
 import localforage from 'localforage';
-import { ref, onMounted, getCurrentInstance } from 'vue'
+import { ref, onMounted } from 'vue'
 import { fetchMD5 } from '../utils/fileUtils/md5Util'
 import BookUtil from '../utils/fileUtils/bookUtils'
 import { ElMessage } from 'element-plus';
-const { proxy } = getCurrentInstance()
+import { Message } from '../../common/resetMessage';
+
 const dialogFormVisible = ref(false);
 let fileList = []
 let bookArr = []
@@ -60,15 +61,7 @@ const handleBook = (file, md5) => {
             bookArr.forEach((item) => {
                 if (item.md5 === md5 && item.size === file.size) {
                     isRepeat = true;
-                    proxy.$msg.warning({
-                        message: '重复书籍',
-                        duration: 3000
-                    })
-                    // ElMessage({
-                    //     message: '重复书籍',
-                    //     type: 'error',
-                    //     plain: true,
-                    // })
+                    Message.warning('重复书籍');
                     return resolve();
                 }
             })
