@@ -1,7 +1,6 @@
 import SparkMD5 from "spark-md5";
 
 export const fetchMD5 = (file) => {
-    console.log(file)
     return new Promise(async (resolve, reject) => {
         try {
             let md5 = await getFileMD5(file);

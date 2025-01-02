@@ -1,17 +1,18 @@
 <script setup>
+import localforage from 'localforage';
 import { ref, onMounted } from 'vue'
 import { fetchMD5 } from '../utils/fileUtils/md5Util'
 import BookUtil from '../utils/fileUtils/bookUtils'
-import Book from "../models/Book";
-const { ipcRenderer } = window.require('electron');
+import { ElMessage } from 'element-plus';
 const dialogFormVisible = ref(false);
 let fileList = []
+let bookArr = []
+let clickFilePath = "";
 const getFiles = () => {
     if (fileList.length > 0) {
         fileList.map(
             async (file) => {
                 // 解析文件 文件名 后缀 
-                console.log(file.raw)
                 await getMd5WithBrowser(file.raw)
             }
         )
@@ -21,7 +22,6 @@ const getFiles = () => {
 const getMd5WithBrowser = async (file) => {
     return new Promise(async (resolve, reject) => {
         const md5 = await fetchMD5(file) //md5设置
-        console.log(md5)
         if (!md5) {
             ElMessage({
                 message: '导入失败',
@@ -31,36 +31,15 @@ const getMd5WithBrowser = async (file) => {
             return resolve()
         } else {
             try {
-                // await this.handleBook(file, md5)
+                await handleBook(file, md5)
             } catch (error) {
                 console.log(error)
             }
-
             return resolve()
         }
     })
 }
-
-// if (!md5) {
-//     ElMessage({
-//         message: '导入失败',
-//         type: 'error',
-//         plain: true,
-//     })
-//     return resolve()
-// } else {
-//     try {
-//         await handleBook(file, md5)
-//     } catch (error) {
-//         console.log(error)
-//     }
-//     return resolve()
-// }
-
-
-
-//文件信息 以及md5 02 处理
-// 解析文件 分割 路径
+//文件信息 
 const handleBook = (file, md5) => {
     //获取文件后缀
     let extension = (file.name)
@@ -89,37 +68,61 @@ const handleBook = (file, md5) => {
                 }
                 let reader = new FileReader()
                 reader.onload = async (event) => {
-                    const file_content = (event.target).result
+                    const file_content = event.target.result
                     try {
                         result = await BookUtil.generateBook(
                             bookName,
                             extension,
                             md5,
                             file.size,
-                            file.path,
+                            file.path || clickFilePath,
                             file
                         )
                     } catch (error) {
                         console.log(error)
                         throw error
                     }
-
                     clickFilePath = ""
                     if (result === "get_metadata_error") {
-                        toast.error(this.props.t("Import failed"))
+                        ElMessage({
+                            message: '导入失败',
+                            type: 'error',
+                            plain: true,
+                        })
                         return resolve()
                     }
                     //把文件复制
-                    // await this.handleAddBook(
-                    //     result,
-                    //     file_content
-                    // )
-
+                    await handleAddBook(
+                        result,
+                        file_content
+                    )
                     return resolve()
                 }
                 reader.readAsArrayBuffer(file)
             }
         }
+    })
+}
+
+const handleAddBook = (book, buffer) => {
+    return new Promise((resolve, reject) => {
+        BookUtil.addBook(book.key, buffer);
+        bookArr.push(book);
+        localforage.setItem("books", bookArr).then(() => {
+            ElMessage({
+                message: '导入成功' + book.name,
+                type: 'success',
+                plain: true,
+            })
+            return resolve();
+        }).catch(() => {
+            ElMessage({
+                message: '导入失败' + book.name,
+                type: 'error',
+                plain: true,
+            })
+            return resolve();
+        });
     })
 }
 
@@ -132,7 +135,10 @@ const handleRemove = (file, uploadFiles) => {
 }
 
 onMounted(() => {
-
+    localforage.getItem("books").then((value) => {
+        bookArr = value ? value : []
+        console.log("bookArr", bookArr)
+    });
 })
 
 </script>

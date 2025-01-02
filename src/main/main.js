@@ -19,7 +19,7 @@ if (!isDevEnv) {
 }
 
 let mainWin = null, tray = null
-const appWidth = 1024, appHeight = 768
+const appWidth = 800, appHeight = 600
 /* 自定义函数 */
 const startup = () => {
     init()
@@ -226,6 +226,10 @@ ipcMain.on('addBooks', async (event, data) => {
     }
 })
 
+ipcMain.on("storage-location", (event, arg) => {
+    event.returnValue = path.join(dirPath, "data");//获取
+});
+
 ipcMain.handle('open-books-folder', async event => {
     // const filePath = path.join(__dirname, '../../books');
     // console.log(filePath)
@@ -236,6 +240,8 @@ ipcMain.handle('open-books-folder', async event => {
         return null;
     }
 });
+
+
 
 
 
