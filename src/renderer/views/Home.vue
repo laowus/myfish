@@ -1,9 +1,10 @@
 <script setup>
 import localforage from 'localforage';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, getCurrentInstance } from 'vue'
 import { fetchMD5 } from '../utils/fileUtils/md5Util'
 import BookUtil from '../utils/fileUtils/bookUtils'
 import { ElMessage } from 'element-plus';
+const { proxy } = getCurrentInstance()
 const dialogFormVisible = ref(false);
 let fileList = []
 let bookArr = []
@@ -53,7 +54,25 @@ const handleBook = (file, md5) => {
     )
     let result
     return new Promise((resolve, reject) => {
-        let isRepeat = false
+        let isRepeat = false;
+        //判断是否重复
+        if (bookArr.length > 0) {
+            bookArr.forEach((item) => {
+                if (item.md5 === md5 && item.size === file.size) {
+                    isRepeat = true;
+                    proxy.$msg.warning({
+                        message: '重复书籍',
+                        duration: 3000
+                    })
+                    // ElMessage({
+                    //     message: '重复书籍',
+                    //     type: 'error',
+                    //     plain: true,
+                    // })
+                    return resolve();
+                }
+            })
+        }
         if (!isRepeat) {
             let reader = new FileReader()
             reader.readAsArrayBuffer(file)

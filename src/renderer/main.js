@@ -11,6 +11,7 @@ import VueLazyLoad from 'vue3-lazyload';
 import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
+import { message } from '../common/resetMessage'
 
 //状态管理
 const pinia = createPinia()
@@ -25,6 +26,7 @@ app.config.errorHandler = (err, vm, info) => {
     // 处理错误
     console.log(err)
 }
+app.config.globalProperties.$msg = message;
 
 app.use(pinia)
     .use(router)

@@ -3,7 +3,6 @@ import { makeBook } from '../../libs/reader'
 import Book from '../../models/Book';
 
 class BookUtil {
-
     static addBook(key, buffer) {
         const fs = window.require("fs");
         const path = window.require("path");
@@ -40,7 +39,7 @@ class BookUtil {
     static generateBook(bookName, extension, md5, size, path, file) {
         return new Promise(async (resolve, reject) => {
             try {
-                let cover = ""
+                let cover = "";
                 let key, name, author, publisher, description, charset, page;
                 [name, author, description, publisher, charset, page] = [
                     bookName,
@@ -49,22 +48,24 @@ class BookUtil {
                     "",
                     "",
                     0
-                ]
-                let meta
-                const book = await makeBook(file)
-                meta = book.metadata
-                name = meta.title || bookName
-                author = meta.author || "Unknown author"
-                description = meta.description || ""
-                publisher = meta.publisher || ""
-                cover = meta.cover || ""
+                ];
+                let meta;
+                const book = await makeBook(file);
+                meta = book.metadata;
+                [name, author, description, publisher, cover] = [
+                    meta.title || bookName,
+                    meta.author || "Unknown author",
+                    meta.description || "",
+                    meta.publisher || "",
+                    meta.cover || ""
+                ];
                 let format = extension.toUpperCase();
                 key = new Date().getTime() + "";
                 resolve(
                     new Book(
                         key, name, author, description, md5, cover, format, publisher, size, page, path, charset
                     )
-                )
+                );
             } catch (error) {
                 console.log(error);
                 resolve("get_metadata_error");
