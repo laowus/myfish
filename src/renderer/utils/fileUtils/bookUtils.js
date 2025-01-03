@@ -8,8 +8,7 @@ class BookUtil {
         const path = window.require("path");
         const dataPath = localStorage.getItem("storageLocation")
             ? localStorage.getItem("storageLocation")
-            : window
-                .require("electron")
+            : window.require("electron")
                 .ipcRenderer.sendSync("storage-location", "ping");
         return new Promise((resolve, reject) => {
             var reader = new FileReader();
@@ -42,29 +41,19 @@ class BookUtil {
                 let cover = "";
                 let key, name, author, publisher, description, charset, page;
                 [name, author, description, publisher, charset, page] = [
-                    bookName,
-                    "Unknown author",
-                    "",
-                    "",
-                    "",
-                    0
-                ];
+                    bookName, "Unknown author", "", "", "", 0];
                 let meta;
                 const book = await makeBook(file);
                 meta = book.metadata;
                 [name, author, description, publisher, cover] = [
-                    meta.title || bookName,
-                    meta.author || "Unknown author",
-                    meta.description || "",
-                    meta.publisher || "",
-                    meta.cover || ""
+                    meta.title || bookName, meta.author || "Unknown author",
+                    meta.description || "", meta.publisher || "", meta.cover || ""
                 ];
                 let format = extension.toUpperCase();
                 key = new Date().getTime() + "";
                 resolve(
-                    new Book(
-                        key, name, author, description, md5, cover, format, publisher, size, page, path, charset
-                    )
+                    new Book(key, name, author, description, md5, cover,
+                        format, publisher, size, page, path, charset)
                 );
             } catch (error) {
                 console.log(error);

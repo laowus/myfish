@@ -11,6 +11,8 @@ import VueLazyLoad from 'vue3-lazyload';
 import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
+import ImageTextTile from './components/ImageTextTile.vue';
+
 
 //状态管理
 const pinia = createPinia()
@@ -31,4 +33,6 @@ app.use(pinia)
     .use(VueLazyLoad, {
         loading: 'default_cover.png',
         error: 'default_cover.png'
-    }).use(ElementPlus).mount('#app')
+    }).use(ElementPlus)
+    .component('ImageTextTile', ImageTextTile)
+    .mount('#app')
