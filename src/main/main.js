@@ -19,7 +19,7 @@ if (!isDevEnv) {
 }
 
 let mainWin = null, tray = null
-const appWidth = 800, appHeight = 600
+const appWidth = 1024, appHeight = 768
 /* 自定义函数 */
 const startup = () => {
     init()

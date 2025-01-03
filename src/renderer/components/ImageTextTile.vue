@@ -23,9 +23,9 @@ const props = defineProps({
 }
 
 .image-text-tile .cover {
-    width: 165px;
-    height: 165px;
-    line-height: 165px;
+    width: 100px;
+    height: 150px;
+    line-height: 150px;
     border-radius: 6px;
     cursor: pointer;
     box-shadow: 0px 0px 10px #161616;
@@ -37,11 +37,12 @@ const props = defineProps({
 }
 
 .image-text-tile .title {
-    width: 165px;
+    width: 100px;
     margin-top: 5px;
-    text-align: left;
+    text-align: center;
     cursor: pointer;
     line-height: 21px;
+    font-size: 12px;
 
     overflow: hidden;
     text-overflow: ellipsis;
@@ -54,11 +55,11 @@ const props = defineProps({
     background: linear-gradient(to right, #1ca388, #28c83f);
     background: var(--btn-bg);
     -webkit-background-clip: text;
-    color: transparent;
+    color: #28c83f;
 }
 
 .image-text-tile .description {
-    width: 165px;
+    width: 100px;
     text-align: left;
     line-height: 25px;
     color: #989898;
